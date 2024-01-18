@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+option go_package = "grpchat/api";
+
+service Messenger {
+  // PublishMessage creates a new message from the MessageBody input parameter and
+  // publishes it to the server. The UUID of the new Message is sent back
+  // to the client.
+  rpc PublishMessage (MessageBody) returns (UUID) {}
+  // DeleteMessage deletes a saved message using its ID.
+  rpc DeleteMessage(UUID) returns (Void) {}
+  // ListMessages fetches all the messages sent to the public chat and returns a
+  // stream of the messages to the client.
+  rpc ListMessages(Void) returns (stream Message) {}
+}
+
+// Void models an empty type, with no data associated.
+message Void {}
+
+// UUID is a wrapper over a universally unique identifier, represented as
+// a string.
+message UUID {
+  string id = 1;
+}
+
+// MessageBody models a message body, with the sender's username and the
+// message body.
+message MessageBody {
+  string senderUsername = 1;
+  string body = 2;
+}
+
+// Message models a message, with a UUID, body, and timestamp. Messages can
+// be uniquely identified by their UUID.
+message Message {
+  string id = 1;
+  MessageBody body = 2;
+  Timestamp sentAt = 3;
+}
+
+// Timestamp models a timestamp, with the seconds and nanoseconds associated
+// to an instance in time.
+message Timestamp {
+  // Represents seconds of UTC time since Unix epoch
+  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+  // 9999-12-31T23:59:59Z inclusive.
+  int64 seconds = 1;
+
+  // Non-negative fractions of a second at nanosecond resolution. Negative
+  // second values with fractions must still have non-negative nanos values
+  // that count forward in time. Must be from 0 to 999,999,999
+  // inclusive.
+  int32 nanos = 2;
+}
